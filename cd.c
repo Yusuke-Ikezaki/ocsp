@@ -1,4 +1,4 @@
-#include "cd.h"
+#include "command.h"
 
 void cd(int nargs, char *args[]){
   // カレントディレクトリ変更  

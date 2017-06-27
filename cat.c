@@ -1,4 +1,4 @@
-#include "cat.h"
+#include "command.h"
 
 void cat(int nargs, char *args[]){
   FILE *fp;

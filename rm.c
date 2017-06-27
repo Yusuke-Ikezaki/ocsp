@@ -1,4 +1,4 @@
-#include "rm.h"
+#include "command.h"
 
 void rm(int nargs, char *args[]){
   int i;

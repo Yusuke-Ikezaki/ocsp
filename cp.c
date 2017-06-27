@@ -1,4 +1,4 @@
-#include "cp.h"
+#include "command.h"
 
 void cp(int nargs, char *args[]){
   FILE *fpin,*fpout;

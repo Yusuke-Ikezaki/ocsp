@@ -1,4 +1,4 @@
-#include "ln.h"
+#include "command.h"
 
 void ln(int nargs, char *args[]){
   if(strcmp(args[1], "-s") == 0) symlink(args[2], args[3]);

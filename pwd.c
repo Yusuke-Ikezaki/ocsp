@@ -1,4 +1,4 @@
-#include "pwd.h"
+#include "command.h"
 
 void pwd(int nargs){
   char pathname[SIZE * 8];

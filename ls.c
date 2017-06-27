@@ -1,4 +1,4 @@
-#include "ls.h"
+#include "command.h"
 
 void ls(int nargs, char *args[]){
   DIR *directory;

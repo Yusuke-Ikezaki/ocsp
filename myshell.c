@@ -1,9 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <unistd.h>
 #include "command.h"
+
 #define BUFSIZE 512
 #define MAXARGS 8
 

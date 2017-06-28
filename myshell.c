@@ -1,8 +1,5 @@
 #include "command.h"
 
-//#define BUFSIZE 512
-//#define MAXARGS 8
-
 int split_commandline(char *line, char *args[]);
 char *current_name();
 
@@ -11,10 +8,11 @@ int main(void){
   char buffer[BUFSIZE]; // コマンドラインからの入力受け付け用バッファ
   char *args[MAXARGS]; // 引数保存用
   int nargs; // 引数の数
+  char *current = "Myshell"; // カレントディレクトリ名
 
   /* 入力の繰り返し */
   while(1){
-    printf("[myshell %s]$ ", current_name());
+    printf("[myshell %s]$ ", current);
     /* コマンドラインからの入力 */
     if(fgets(buffer, sizeof(buffer), stdin) == NULL) break;
     /* 入力の分割 */
@@ -22,7 +20,10 @@ int main(void){
 
     /* コマンド処理 */
     if(strcmp(args[0], "ls") == 0) ls(nargs, args);
-    else if(strcmp(args[0], "cd") == 0) cd(nargs, args);
+    else if(strcmp(args[0], "cd") == 0){
+      cd(nargs, args);
+      current = current_name();
+    }
     else if(strcmp(args[0], "mv") == 0) mv(nargs, args);
     else if(strcmp(args[0], "cp") == 0) cp(nargs, args);
     else if(strcmp(args[0], "rm") == 0) rm(nargs, args);
@@ -64,13 +65,17 @@ int split_commandline(char *line, char *args[]){
 
 /* カレントディレクトリの名前を返す */
 char *current_name(){
-  char pathname[BUFSIZE];
-  getcwd(pathname, BUFSIZE);
+  /* カレントディレクトリまでのパスを取得 */
+  char pathname[PATHSIZE];
+  getcwd(pathname, PATHSIZE);
 
+  /* カレントディレクトリの名前の先頭を探す */
   int i;
   int pathlength = strlen(pathname);
-  for(i = pathlength; pathname[i] != '/'; i--);
-  
+  printf("%d\n", pathlength);
+  for(i = pathlength - 1; pathname[i] != '/'; i--);
+
+  /* カレントディレクトリの名前をコピー */
   int j;
   char *p = (char *) malloc (pathlength - i - 1);
   for(j = 0; j < pathlength - i - 1; j++)

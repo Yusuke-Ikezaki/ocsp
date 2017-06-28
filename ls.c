@@ -80,7 +80,7 @@ void print_info(char *name){
     }
     mode /= 2;
   }
-  printf("%c%s", type, permission);
+  printf("%c%s ", type, permission);
 
   /* ハードリンクの数 */
   printf("%2d ", (int)st.st_nlink);

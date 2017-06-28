@@ -3,7 +3,7 @@
 # configure env
 CC = gcc
 LFLAGS =
-CFLAGS = -Wall
+CFLAGS =
 
 # program 
 PROG1 = myshell
@@ -12,7 +12,7 @@ PROG1 = myshell
 HDRS1 = command.h
 
 # object file
-OBJS1 = myshell.o command.o
+OBJS1 = myshell.o cat.o cd.o cp.o echo.o head.o ln.o ls.o mv.o pwd.o rm.o unknown.o
 
 # compile all
 all: $(PROG1)

@@ -1,6 +1,5 @@
 #include "header.h"
-
-#define SIZE 64
+#include "definition.h"
 
 void ls(int nargs, char *args[]);
 void cd(int nargs, char *args[]);
@@ -12,4 +11,5 @@ void echo(int nargs, char *args[]);
 void pwd(int nargs);
 void cat(int nargs, char *args[]);
 void head(int nargs, char *args[]);
+void mkdir(int nargs, char *args[]);
 void unknown(char *arg);

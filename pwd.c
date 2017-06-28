@@ -1,7 +1,14 @@
 #include "command.h"
 
+/* カレントディレクトリまでのパスを表示 */
 void pwd(int nargs){
-  char pathname[SIZE * 8];
-  getcwd(pathname, SIZE * 8);
-  fprintf(stdout, "%s\n", pathname);
+  /* 引数が多い場合 */
+  if(nargs > 1){
+    puts("Too many arguments"); return;
+  }
+
+  /* パスの出力 */
+  char pathname[PATHSIZE];
+  getcwd(pathname, PATHSIZE);
+  printf("%s\n", pathname);
 }

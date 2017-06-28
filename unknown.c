@@ -1,6 +1,6 @@
 #include "command.h"
 
+/* 未知コマンドの対応 */
 void unknown(char *arg){
-  /* 未知コマンドの対応 */
   printf("unknown command: %s\n", arg);
 }

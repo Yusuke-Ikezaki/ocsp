@@ -49,7 +49,7 @@ void ls(int nargs, char *args[]){
   else if(S_ISREG(st.st_mode) || S_ISFIFO(st.st_mode) ||
 	  S_ISLNK(st.st_mode) || S_ISSOCK(st.st_mode))
     print_info(args[1]);
-  /* ディレクトリ、通常ファイル以外 */
+  /* それ以外 */
   else
     puts("No such file or directory");
 }
@@ -80,7 +80,7 @@ void print_info(char *name){
     }
     mode /= 2;
   }
-  printf("%c%s", type, permission);
+  printf("%c%s ", type, permission);
 
   /* ハードリンクの数 */
   printf("%2d ", (int)st.st_nlink);

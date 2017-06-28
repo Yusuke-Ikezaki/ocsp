@@ -2,8 +2,12 @@
 
 /* ファイルのコピー */
 void cp(int nargs, char *args[]){
+  /* 引数が少ない場合 */
+  if(nargs < 3){
+    puts("Too few arguments");
+  }
   /* 引数が多い場合 */
-  if(nargs > 3){
+  else if(nargs > 3){
     puts("Too many arguments"); return;
   }
 

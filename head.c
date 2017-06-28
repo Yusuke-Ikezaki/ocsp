@@ -2,8 +2,12 @@
 
 /* ファイルの内容を先頭の10行まで表示 */
 void head(int nargs, char *args[]){
+  /* 引数がない場合 */
+  if(nargs == 1){
+    puts("There are no arguments"); return;
+  }
   /* 引数が多い場合 */
-  if(nargs > 2){
+  else if(nargs > 2){
     puts("Too many arguments"); return;
   }
 

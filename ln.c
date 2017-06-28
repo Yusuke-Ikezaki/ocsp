@@ -8,7 +8,7 @@ void ln(int nargs, char *args[]){
   if(strcmp(args[1], "-s") == 0){
     /* 引数が少ない場合 */
     if(nargs < 4){
-      puts("Too little arguments"); return;
+      puts("Too few arguments"); return;
     }
 
     for(i = 3; i < nargs; i++)
@@ -19,7 +19,7 @@ void ln(int nargs, char *args[]){
   else{
     /* 引数が少ない場合 */
     if(nargs < 3){
-      puts("Too little arguments"); return;
+      puts("Too few arguments"); return;
     }
 
     for(i = 2; i < nargs; i++)

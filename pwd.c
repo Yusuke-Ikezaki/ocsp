@@ -1,6 +1,6 @@
 #include "command.h"
 
-#define PATHSIZE 128
+//#define PATHSIZE 128
 
 void pwd(int nargs){
   char pathname[PATHSIZE];

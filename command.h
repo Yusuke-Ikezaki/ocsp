@@ -1,4 +1,5 @@
 #include "header.h"
+#include "definition.h"
 
 void ls(int nargs, char *args[]);
 void cd(int nargs, char *args[]);

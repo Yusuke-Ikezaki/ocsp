@@ -1,6 +1,6 @@
 #include "command.h"
 
-#define BUFSIZE 512
+//#define BUFSIZE 512
 
 void cp(int nargs, char *args[]){
   FILE *fpin,*fpout;

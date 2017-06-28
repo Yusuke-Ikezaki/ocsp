@@ -1,7 +1,7 @@
 #include "command.h"
 
-#define BUFSIZE 512
-#define MAXARGS 8
+//#define BUFSIZE 512
+//#define MAXARGS 8
 
 int split_commandline(char *line, char *args[]);
 char *current_name();

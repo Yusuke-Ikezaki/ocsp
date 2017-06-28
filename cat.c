@@ -1,6 +1,6 @@
 #include "command.h"
 
-#define BUFSIZE 512 // バッファのサイズ
+//#define BUFSIZE 512 // バッファのサイズ
 
 /* ファイルの内容を表示 */
 void cat(int nargs, char *args[]){

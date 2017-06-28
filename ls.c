@@ -1,44 +1,99 @@
 #include "command.h"
 
-void ls(int nargs, char *args[]){
-  DIR *directory;
-  FILE *fp;
-  struct dirent *ent;
+void print_info(char *name);
 
-  if(nargs == 1){
-    directory = opendir(".");
-    while((ent = readdir(directory)) != NULL)
-      printf("%s\n", ent -> d_name);
-    closedir(directory);
-  } else{
-    struct stat st;
-    mode_t filetype;
-    stat(args[1], &st);
-    filetype = st.st_mode & S_IFMT;
-    if(filetype == S_IFDIR){
-      directory = opendir(args[1]);
-      while((ent = readdir(directory)) != NULL)
-        printf("%s\n", ent -> d_name);
-      closedir(directory);
-    } else if(filetype == S_IFREG){
-      puts(args[1]);
-      fp = fopen(args[1], "r");
-      printf("デバイスID                       : %d\n", st.st_dev);
-      printf("inode番号                        : %d\n", st.st_ino);
-      printf("アクセス保護                     : %o\n", st.st_mode);
-      printf("ハードリンクの数                 : %d\n", st.st_nlink);
-      printf("所有者のユーザID                 : %d\n", st.st_uid);
-      printf("所有者のグループID               : %d\n", st.st_gid);
-      printf("デバイスID（特殊ファイルの場合） : %d\n", st.st_rdev);
-      printf("容量（バイト単位）               : %d\n", st.st_size);
-      printf("ファイルシステムのブロックサイズ : %d\n", st.st_blksize);
-      printf("割り当てられたブロック数         : %d\n", st.st_blocks);
-      printf("最終アクセス時刻                 : %s", ctime(&(st.st_atime)));
-      printf("最終修正時刻                     : %s", ctime(&(st.st_mtime)));
-      printf("最終状態変更時刻                 : %s", ctime(&(st.st_ctime)));
-      fclose(fp);
-    } else{
-      puts("No such  file or directory");
-    }
+/* ファイルの情報を表示 */
+void ls(int nargs, char *args[]){
+  /* 引数が多い場合 */
+  if(nargs > 2){
+    puts("too many arguments"); return;
   }
+
+  /* ファイル名の補完 */
+  int option = 0; // オプションの有無
+  /* lsのみの場合 */
+  if(nargs == 1) args[1] = ".";
+  /* ls -lの場合 */
+  else if(strcmp(args[1], "-l") == 0){
+    args[1] = ".";
+    option = 1;
+  }
+
+  /* ファイルの状態の取得 */
+  struct stat st;
+  lstat(args[1], &st);
+
+  /* ファイルのタイプごとの処理 */
+  /* ディレクトリ */
+  if(S_ISDIR(st.st_mode)){
+    DIR *directory;
+    struct dirent *ent;
+
+    /* ディレクトリを開く */
+    directory = opendir(args[1]);
+
+    /* オプション有り */
+    if(option)
+      while((ent = readdir(directory)) != NULL)
+	print_info(ent -> d_name);
+    /* オプション無し */
+    else
+      while((ent = readdir(directory)) != NULL)
+	/* 名前 */
+	printf("%s\n", ent -> d_name);
+
+    /* ディレクトリを閉じる */
+    closedir(directory);
+  }
+  /* 通常ファイル、FIFO、シンボリックリンク、ソケット */
+  else if(S_ISREG(st.st_mode) || S_ISFIFO(st.st_mode) ||
+	  S_ISLNK(st.st_mode) || S_ISSOCK(st.st_mode))
+    print_info(args[1]);
+  /* ディレクトリ、通常ファイル以外 */
+  else
+    puts("No such file or directory");
+}
+
+/* ファイルの情報を出力 */
+void print_info(char *name){
+  /* ファイルの状態の取得 */
+  struct stat st;
+  lstat(name, &st);
+
+  /* ファイルの種類とアクセス保護モード */
+  /* モードの取得 */
+  int mode = (int)st.st_mode;
+  /* ファイルの種類 */
+  char type = '-';
+  if(S_ISDIR(mode)) type = 'd';
+  else if(S_ISFIFO(mode)) type = 'f';
+  else if(S_ISLNK(mode)) type = 'l';
+  else if(S_ISSOCK(mode)) type = 's';
+  /* アクセス保護モード */
+  char permission[10] = "---------";
+  int i;
+  for(i = 9; i > 0; i--){
+    if(mode % 2){
+      if((i % 3) == 0) permission[i - 1] = 'x';
+      else if(((i + 1) % 3) == 0) permission[i - 1] = 'w';
+      else if(((i + 2) % 3) == 0) permission[i - 1] = 'r';
+    }
+    mode /= 2;
+  }
+  printf("%c%s", type, permission);
+
+  /* ハードリンクの数 */
+  printf("%2d ", (int)st.st_nlink);
+
+  /* 大きさ */
+  printf("%5d ", (int)st.st_size);
+
+  /* 最終修正時刻 */
+  char *changed = ctime(&(st.st_mtime));
+  /* 改行文字の削除 */
+  changed[strlen(changed) - 1] = '\0';
+  printf("%s ", changed);
+
+  /* 名前 */
+  printf("%s\n", name);
 }

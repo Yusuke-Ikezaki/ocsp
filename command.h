@@ -1,7 +1,5 @@
 #include "header.h"
 
-#define SIZE 64
-
 void ls(int nargs, char *args[]);
 void cd(int nargs, char *args[]);
 void mv(int nargs, char *args[]);

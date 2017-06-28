@@ -1,8 +1,10 @@
 #include "command.h"
 
+#define BUFSIZE 512
+
 void cp(int nargs, char *args[]){
   FILE *fpin,*fpout;
-  char buf[SIZE * 8];
+  char buf[BUFSIZE];
 
   fpin = fopen(args[1], "r");
   if(fpin == NULL){
@@ -16,7 +18,7 @@ void cp(int nargs, char *args[]){
     exit(EXIT_FAILURE);
   }
 
-  while(fgets(buf, SIZE * 8, fpin) != NULL){
+  while(fgets(buf, BUFSIZE, fpin) != NULL){
     fputs(buf, fpout);
   }
 

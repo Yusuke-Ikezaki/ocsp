@@ -1,6 +1,11 @@
 #include "command.h"
 
+/* ディレクトリの移動 */
 void cd(int nargs, char *args[]){
-  // カレントディレクトリ変更  
+  if(nargs > 2){
+    puts("too many arguments"); return;
+  }
+
+  /* 作業ディレクトリの変更 */
   chdir(args[1]);
 }

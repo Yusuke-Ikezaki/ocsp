@@ -7,5 +7,5 @@ void cd(int nargs, char *args[]){
   }
 
   /* 作業ディレクトリの変更 */
-  chdir(args[1]);
+  if(chdir(args[1]) == -1) puts("No such directory");
 }

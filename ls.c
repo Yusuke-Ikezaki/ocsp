@@ -66,7 +66,7 @@ void print_info(char *name){
   /* ファイルの種類 */
   char type = '-';
   if(S_ISDIR(mode)) type = 'd';
-  else if(S_ISFIFO(mode)) type = 'f';
+  else if(S_ISFIFO(mode)) type = 'p';
   else if(S_ISLNK(mode)) type = 'l';
   else if(S_ISSOCK(mode)) type = 's';
   /* アクセス保護モード */

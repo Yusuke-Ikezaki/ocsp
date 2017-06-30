@@ -32,7 +32,7 @@ int main(void){
     else if(strcmp(args[0], "pwd") == 0) pwd(nargs);
     else if(strcmp(args[0], "cat") == 0) cat(nargs, args);
     else if(strcmp(args[0], "head") == 0) head(nargs, args);
-    else if(strcmp(args[0], "exit") == 0) break;
+    else if(strcmp(args[0], "exit") == 0) Exit(nargs);
     else unknown(args[0]);
   }
   return 0;
@@ -72,7 +72,6 @@ char *current_name(){
   /* カレントディレクトリの名前の先頭を探す */
   int i;
   int pathlength = strlen(pathname);
-  printf("%d\n", pathlength);
   for(i = pathlength - 1; pathname[i] != '/'; i--);
 
   /* カレントディレクトリの名前をコピー */

@@ -11,5 +11,5 @@ void echo(int nargs, char *args[]);
 void pwd(int nargs);
 void cat(int nargs, char *args[]);
 void head(int nargs, char *args[]);
-void mkdir(int nargs, char *args[]);
+void Exit(int nargs);
 void unknown(char *arg);

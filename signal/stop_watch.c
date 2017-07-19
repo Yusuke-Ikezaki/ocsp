@@ -14,8 +14,7 @@ int main(void){
 
   start = restart = clock();
   puts("計測中... (Ctrl-c: ストップ)");
-  while(1){
-  }
+  while(1);
   end = clock();
 
   return 0;
@@ -31,7 +30,7 @@ void stop(int dummy){
     fgets(answer, sizeof(answer), stdin);
     strtok(answer, "\n");
     if(strlen(answer) > 1){
-      puts("1文字を入力してください"); 
+      puts("1文字を入力してください");
     } else if(answer[0] == 'q'){
       printf("合計計測時間: %.2f [s]\n", (double)(end - start) / CLOCKS_PER_SEC);
       exit(EXIT_SUCCESS);

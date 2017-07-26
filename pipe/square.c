@@ -6,7 +6,9 @@
 
 int main(){
   /* 整数値 */
-  long int n;
+  int n;
+  /* 整数値の2乗 */
+  long int squared;
   /* 双方向パイプ */
   int fd1[2], fd2[2];
   /* プロセスID */
@@ -34,14 +36,14 @@ int main(){
     /* fd2の読み込みを閉じる */
     close(fd2[0]);
 
-    /* fd1からの読み込み */
+    /* 整数値をfd1から読み込む */
     read(fd1[0], &n, sizeof(n));
     /* fd1の読み込みを閉じる */
     close(fd1[0]);
 
     /* 読み込んだ整数値の2乗を出力 */
-    long int squared = n * n;
-    printf("child : %d * %d = %d\n", n, n, squared);
+    squared = n * n;
+    printf("child : %d * %d = %ld\n", n, n, squared);
 
     /* fd2への書き込み */
     write(fd2[1], &squared, sizeof(n));
@@ -51,14 +53,25 @@ int main(){
     /* 親プロセス */
     /* fd1の読み込みを閉じる */
     close(fd1[0]);
+    /* fd2の書き込みを閉じる */
     close(fd2[1]);
+
+    /* 整数値の入力 */
     printf("Parent > ");
     scanf("%d", &n);
+
+    /* 整数値をfd1へ書き込む */
     write(fd1[1], &n, sizeof(n));
+    /* fd1の書き込みを閉じる */
     close(fd1[1]);
-    read(fd2[0], &n, sizeof(n));
+
+    /* 整数値の2乗をfd2から読み込む */
+    read(fd2[0], &squared, sizeof(n));
+    /* fd2の読み込みを閉じる */
     close(fd2[0]);
-    printf("parent : ans = %d\n", n);
+
+    /* 整数値の2乗を出力 */
+    printf("parent : ans = %ld\n", squared);
   }
 
   return 0;

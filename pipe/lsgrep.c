@@ -4,53 +4,77 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
-#define BUFSIZE 64
-
 int main(int args, char *argv[]){
-  char str[] = "out.txt";
+  /* lsの書き込み用ファイル */
+  char *filename = "out.txt";
+  /* プロセスID */
   pid_t pid;
+  /* 子プロセスの状態 */
   int status;
-  int fd[2];
+  /* ファイルディスクリプタ */
+  int fd;
 
+  /* コマンドライン引数の確認 */
   if(args != 3){
+    /* コマンド形式の間違い */
     perror("./lsgrep dir name");
     exit(EXIT_FAILURE);
   }
 
-  if(pipe(fd) < 0){
-    perror("pipe");
-    exit(EXIT_FAILURE);
-  }
-
+  /* フォーク */
   pid = fork();
   if(pid == 0){
-    close(fd[1]);
-    read(fd[0], str, sizeof(str));
-    close(fd[0]);
-    execlp("grep", "grep", argv[2], str, NULL);
-  } else if(pid > 0){
-    close(fd[0]);
-    if((fd[1] = open("out.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644)) == -1){
+    /* 子プロセス */
+    /* filenameを開く */
+    if((fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644)) == -1){
+      /* オープン失敗 */
       perror("open failed");
       exit(EXIT_FAILURE);
     }
 
+    /* 標準出力を閉じる */
     close(1);
 
-    if(dup(fd[1]) != 1){
+    /* filenameを標準出力に割り当てる */
+    if(dup(fd) != 1){
+      /* 割り当て失敗 */
       perror("dup failed");
-      close(fd[1]);
+      close(fd);
       exit(EXIT_FAILURE);
     }
 
-    pid = fork();
-    if(pid == 0)
-      execlp("ls", "ls", "-l", argv[1], NULL);
-    write(fd[1], str, sizeof(str));
-    close(fd[1]);
+    /* ls -l dirの実行 */
+    execlp("ls", "ls", "-l", argv[1], NULL);
+  } else if(pid > 0){
+    /* 親プロセス */
+    /* 子プロセスを待つ */
     wait(&status);
+
+    /* フォーク */
+    pid = fork();
+    if(pid == 0){
+      /* 子プロセス */
+      /* grep name filenameの実行 */
+      execlp("grep", "grep", argv[2], filename, NULL);
+    } else if(pid > 0){
+      /* 親プロセス */
+      /* 子プロセスを待つ */
+      wait(&status);
+    } else{
+      /* フォーク失敗 */
+      perror("fork");
+      exit(EXIT_FAILURE);
+    }
   } else{
+    /* フォーク失敗 */
     perror("fork");
+    exit(EXIT_FAILURE);
+  }
+
+  /* filenameの消去 */
+  if(remove(filename) != 0){
+    /* 消去失敗 */
+    perror("remove");
     exit(EXIT_FAILURE);
   }
 }

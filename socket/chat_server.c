@@ -8,13 +8,20 @@
 
 #define BUFSIZE 256
 
+void chop(char *str){
+  char *p = strchr(str, '\n');
+  if(p != NULL)
+    *p = '\0';
+}
+
 int main(int argc, char *argv[]){
   int listening_socket;
   int connected_socket;
   struct sockaddr_in server;
   struct sockaddr_in client;
   socklen_t fromlen;
-  uint16_t port;
+  uint16_t recv_port;
+  uint16_t send_port;
   char buffer[BUFSIZE];
   int temp = 1;
 
@@ -23,7 +30,7 @@ int main(int argc, char *argv[]){
     exit(EXIT_FAILURE);
   }
 
-  port = atoi(argv[1]);
+  recv_port = atoi(argv[1]);
 
   listening_socket = socket(PF_INET, SOCK_STREAM, 0);
   if(listening_socket == -1){
@@ -39,7 +46,7 @@ int main(int argc, char *argv[]){
 
   memset((void *) &server, 0, sizeof(server));
   server.sin_family = PF_INET;
-  server.sin_port = htons(port);
+  server.sin_recv_port = htons(recv_port);
   server.sin_addr.s_addr = htonl(INADDR_ANY);
   
   if(bind(listening_socket, (struct sockaddr *) &server, sizeof(server)) == -1){
@@ -65,8 +72,15 @@ int main(int argc, char *argv[]){
 
   while(1){
     memset(buffer, '\0', BUFSIZE);
+    printf("> ");
+    if(fgets(buffer, BUFSIZE, stdin) == NULL)
+      strcpy(buffer, "quit");
+    chop(buffer);
+    send(socket_fd, buffer, BUFSIZE, 0);
+
+    memset(buffer, '\0', BUFSIZE);
     recv(connected_socket, buffer, BUFSIZE, 0);
-    printf("from client: %s\n", buffer);
+    printf("%s\n", buffer);
     if(strcmp(buffer, "quit") == 0)
       break;
   }

@@ -52,6 +52,10 @@ int main(int argc, char *argv[]){
 
   while(1){
     memset(buffer, '\0', BUFSIZE);
+    recv(connected_socket, buffer, BUFSIZE, 0);
+    printf("%s\n", buffer);
+
+    memset(buffer, '\0', BUFSIZE);
     printf("> ");
     if(fgets(buffer, BUFSIZE, stdin) == NULL)
       strcpy(buffer, "quit");

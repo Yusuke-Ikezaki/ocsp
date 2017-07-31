@@ -35,6 +35,8 @@
 *.i*86
 *.x86_64
 *.hex
+chat_server
+chat_client
 
 # Debug files
 *.dSYM/

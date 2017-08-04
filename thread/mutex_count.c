@@ -4,10 +4,9 @@
 #include <unistd.h>
 #include <pthread.h>
 
-int value = 50;
+int count = 0;
 
-void *calc1(void *arg);
-void *calc2(void *arg);
+void *_count(void *arg);
 
 typedef struct{
   char name[64];
@@ -15,20 +14,26 @@ typedef struct{
 } mythread_args_t;
 
 int main(void){
-  pthread_t th1, th2;
+  pthread_t th1, th2, th3;
   void *rval;
   pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   mythread_args_t args1 = {"th1", &mutex};
   mythread_args_t args2 = {"th2", &mutex};
+  mythread_args_t args3 = {"th3", &mutex};
 
   srand((unsigned int) time(NULL));
   
-  if(pthread_create(&th1, NULL, calc1, (void *) &args1) != 0){
+  if(pthread_create(&th1, NULL, _count, (void *) &args1) != 0){
     perror("Thread_creation failed.\n");
     exit(EXIT_FAILURE);
   }
 
-  if(pthread_create(&th2, NULL, calc2, (void *) &args2) != 0){
+  if(pthread_create(&th2, NULL, _count, (void *) &args2) != 0){
+    perror("Thread creation failed.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  if(pthread_create(&th3, NULL, _count, (void *) &args3) != 0){
     perror("Thread creation failed.\n");
     exit(EXIT_FAILURE);
   }
@@ -43,43 +48,44 @@ int main(void){
     perror("Failed to join with th2.\n");
   }
 
+  printf("the process joins with thread th3\n");
+  if(pthread_join(th3, &rval) != 0){
+    perror("Failed to join with th3.\n");
+  }
+
   return 0;
 }
 
-void *calc1(void *arg){
+/* countに1を10回加算する関数 */
+void *_count(void *arg){
   mythread_args_t *targs = (mythread_args_t *) arg;
   int prev;
+  int i;
 
+  /* 3秒以内のスリープ */
   sleep(rand() % 3);
-  printf("[%s] trying to lock...\n", targs -> name);
-  pthread_mutex_lock(targs -> mlock);
-  
-  printf("[%s] locked\n", targs -> name);
-  prev = value;
-  sleep(rand() % 5);
-  value = prev + 10;
-  printf("[%s] %d -> %d\n", targs -> name, prev, value);
 
-  pthread_mutex_unlock(targs -> mlock);
-  printf("[%s] unlock\n", targs -> name);
-  pthread_exit(NULL);
-}
+  for(i = 0; i < 10; i++){
+    /* 3秒以内のスリープ */
+    sleep(rand() % 3);
+    
+    /* ロック */
+    pthread_mutex_lock(targs -> mlock);
 
-void *calc2(void *arg){
-  mythread_args_t *targs = (mythread_args_t *) arg;
-  int prev;
+    /* クリティカルセクション */
+    /* 元の値を表示 */
+    prev = count;
+    printf("[%s] %d -> ", targs -> name, prev);
+    /* 4秒以内のスリープ */
+    sleep(rand() % 5);
+    /* countに1を加算 */
+    count = prev + 1;
+    /* 加算後のcountを表示 */
+    printf("%d\n", count);
 
-  sleep(rand() % 3);
-  printf("[%s] trying to lock...\n", targs -> name);
-  pthread_mutex_lock(targs -> mlock);
+    /* ロック解除 */
+    pthread_mutex_unlock(targs -> mlock);
+  }
 
-  printf("[%s] locked\n", targs -> name);
-  prev = value;
-  sleep(rand() % 5);
-  value = prev * 5;
-  printf("[%s] %d -> %d\n", targs -> name, prev, value);
-  
-  pthread_mutex_unlock(targs -> mlock);
-  printf("[%s] unlock\n", targs -> name);
   pthread_exit(NULL);
 }

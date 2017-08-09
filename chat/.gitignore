@@ -35,6 +35,8 @@
 *.i*86
 *.x86_64
 *.hex
+server
+client
 
 # Debug files
 *.dSYM/
@@ -53,3 +55,6 @@ dkms.conf
 
 # Emacs Auto Backup Files
 \#*#
+server.c~
+client.c~
+readme.txt~

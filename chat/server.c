@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netdb.h>
 
 #define BUFSIZE 256
 #define SEND 0
@@ -36,7 +37,9 @@ int main(int argc, char *argv[]){
   char buffer[BUFSIZE];
   /* ソケットオプション用 */
   int temp = 1;
+  /* プロセスID */
   pid_t pid[PARENT];
+  /* ループ用 */
   int i;
 
   /* 引数の確認 */
@@ -52,7 +55,7 @@ int main(int argc, char *argv[]){
   /* ソケットの作成 */
   listening_socket = socket(PF_INET, SOCK_STREAM, 0);
   if(listening_socket == -1){
-      /* 作成失敗 */
+    /* 作成失敗 */
     perror("server: socket");
     exit(EXIT_FAILURE);
   }
@@ -100,24 +103,27 @@ int main(int argc, char *argv[]){
   if(connected_socket == -1){
     /* 受け入れ失敗 */
     perror("server: accept");
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 
   /* listening_socketを閉じる */
   close(listening_socket);
 
+  /* プロセスの複製 */
   for(i = 0; i < PARENT && (pid[i] = fork()) > 0; i++);
 
+  /* プロセスごとの処理 */
   if(pid[i] == 0){
+    /* 子プロセス */
     /* クライアントとの通信 */
     if(i == SEND){
       /* 送信用 */
       while(1){
 	memset(buffer, '\0', BUFSIZE);
-	printf(">>> ");
 	if(fgets(buffer, BUFSIZE, stdin) == NULL)
 	  strcpy(buffer, "quit");
 	chop(buffer);
+	/* クライアントにメッセージを送信 */
 	send(connected_socket, buffer, BUFSIZE, 0);
 	if(strcmp(buffer, "quit") == 0)
 	  break;
@@ -126,15 +132,22 @@ int main(int argc, char *argv[]){
       /* 受信用 */
       while(1){
 	memset(buffer, '\0', BUFSIZE);
+	/* クライアントからメッセージを受信 */
 	recv(connected_socket, buffer, BUFSIZE, 0);
-	printf("\nfrom client: %s\n> ", buffer);
+	printf("\nfrom client: %s\n", buffer);
 	if(strcmp(buffer, "quit") == 0)
 	  break;
       }
     }
+    /* 子プロセスの終了 */
     exit(0);
   } else{
+    /* 親プロセス */
+    /* 子プロセスの監視 */
+    puts("-*- this is server -*-");
+    /* 1つの子プロセスが終わるまでループ */
     while(waitpid(-1, NULL, WNOHANG) <= 0);
+    /* 子プロセスを終了 */
     for(i = 0; i < PARENT; i++)
       kill(pid[i], SIGINT);
   }

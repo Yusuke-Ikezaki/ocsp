@@ -31,8 +31,9 @@ int main(int argc, char *argv[]){
   uint16_t port;
   /* メッセージを格納するバッファ */
   char buffer[BUFSIZE];
+  /* プロセスID */
   pid_t pid[PARENT];
-  int status;
+  /* ループ用 */
   int i;
 
   /* 引数の確認 */
@@ -77,36 +78,45 @@ int main(int argc, char *argv[]){
     exit(EXIT_FAILURE);
   }
 
+  /* プロセスの複製 */
   for(i = 0; i < PARENT && (pid[i] = fork()) > 0; i++);
 
+  /* プロセスごとの処理 */
   if(pid[i] == 0){
+    /* 子プロセス */
     /* サーバとの通信 */
     if(i == SEND){
       /* 受信用 */
       while(1){
 	memset(buffer, '\0', BUFSIZE);
+	/* サーバからメッセージを受信 */
 	recv(socket_fd, buffer, BUFSIZE, 0);
 	printf("\nfrom server: %s\n", buffer);
 	if(strcmp(buffer, "quit") == 0)
 	  break;
-	printf("> ");
       }
     } else if(i == RECV){
       /* 送信用 */
       while(1){
 	memset(buffer, '\0', BUFSIZE);
-	printf(">>> ");
 	if(fgets(buffer, BUFSIZE, stdin) == NULL)
 	  strcpy(buffer, "quit");
 	chop(buffer);
+	/* サーバにメッセージを送信 */
 	send(socket_fd, buffer, BUFSIZE, 0);
 	if(strcmp(buffer, "quit") == 0)
 	  break;
       }
     }
+    /* 子プロセスの終了 */
     exit(0);
   } else{
+    /* 親プロセス */
+    /* 子プロセスの監視 */
+    puts("-*- this is client -*-");
+    /* 1つの子プロセスが終わるまでループ */
     while(waitpid(-1, NULL, WNOHANG) <= 0);
+    /* 子プロセスを終了 */
     for(i = 0; i < PARENT; i++)
       kill(pid[i], SIGINT);
   }
